@@ -8,7 +8,7 @@
   <groupId>jndi-view</groupId>
   <artifactId>jndi-view</artifactId>
   <packaging>war</packaging>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.1</version>
 
   <licenses>
     <license>
