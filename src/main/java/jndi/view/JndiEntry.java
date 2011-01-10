@@ -63,21 +63,6 @@ public class JndiEntry {
     }
 
     /**
-     * @return the targetClassName
-     */
-    public final String getActualClassName() {
-        return targetClassName;
-    }
-
-    /**
-     * @param targetClassName
-     *        the targetClassName to set
-     */
-    public final void setActualClassName(final String actualClassName) {
-        this.targetClassName = actualClassName;
-    }
-
-    /**
      * @return the context
      */
     public final boolean isContext() {

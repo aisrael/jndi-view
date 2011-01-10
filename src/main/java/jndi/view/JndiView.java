@@ -7,8 +7,6 @@
  */
 package jndi.view;
 
-import static java.util.logging.Level.SEVERE;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -64,8 +62,8 @@ public class JndiView extends ParameterizableViewController {
      *      javax.servlet.http.HttpServletResponse)
      */
     @Override
-    protected ModelAndView handleRequestInternal(final HttpServletRequest request, final HttpServletResponse response)
-            throws Exception {
+    protected final ModelAndView handleRequestInternal(final HttpServletRequest request,
+            final HttpServletResponse response) throws Exception {
         final ModelAndView mav = new ModelAndView(getViewName());
 
         final String uri = request.getRequestURI();
@@ -109,28 +107,8 @@ public class JndiView extends ParameterizableViewController {
      *         on exception
      * @see org.springframework.jndi.JndiTemplate#execute(org.springframework.jndi.JndiCallback)
      */
-    public <T> T execute(final JndiCallback<T> callback) throws NamingException {
+    public final <T> T execute(final JndiCallback<T> callback) throws NamingException {
         return jndiTemplate.execute(callback);
-    }
-
-    /**
-     * Delegate to {@link #jndiTemplate#lookup(String, Class)}
-     *
-     * @param <T>
-     *        the desired type
-     * @param name
-     *        the name to lookup
-     * @param clazz
-     *        the desired class
-     * @return T
-     */
-    protected <T> T lookup(final String name, final Class<T> clazz) {
-        try {
-            return jndiTemplate.lookup(name, clazz);
-        } catch (final NamingException e) {
-            logger.log(SEVERE, e.getMessage(), e);
-            throw new RuntimeException(e.getMessage(), e);
-        }
     }
 
     /**
@@ -253,6 +231,7 @@ public class JndiView extends ParameterizableViewController {
 
     /**
      * @param obj
+     *        an Object
      */
     private void dumpMethods(final Object obj) {
         final Class<? extends Object> clazz = obj.getClass();
@@ -269,6 +248,7 @@ public class JndiView extends ParameterizableViewController {
 
     /**
      * @param cl
+     *        a Class
      */
     private void dumpFields(final Class<?> cl) {
         for (final Field field : cl.getDeclaredFields()) {
