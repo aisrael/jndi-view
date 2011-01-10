@@ -7,7 +7,7 @@
   <groupId>jndi-view</groupId>
   <artifactId>jndi-view</artifactId>
   <packaging>war</packaging>
-  <version>0.1</version>
+  <version>0.1.1-SNAPSHOT</version>
 
   <licenses>
     <license>
@@ -18,9 +18,9 @@
 
   <!-- SVN Configuration -->
   <scm>
-    <connection>scm:svn:http://jndi-view.googlecode.com/svn/tags/jndi-view-0.1</connection>
-    <developerConnection>scm:svn:https://jndi-view.googlecode.com/svn/tags/jndi-view-0.1</developerConnection>
-    <url>http://code.google.com/p/jndi-view/source/browse/#svn/tags/jndi-view-0.1</url>
+    <connection>scm:svn:http://jndi-view.googlecode.com/svn/trunk</connection>
+    <developerConnection>scm:svn:https://jndi-view.googlecode.com/svn/trunk</developerConnection>
+    <url>http://code.google.com/p/jndi-view/source/browse/#svn/trunk</url>
   </scm>
 
   <properties>
