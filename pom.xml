@@ -17,6 +17,13 @@
     </license>
   </licenses>
 
+  <!-- SVN Configuration -->
+  <scm>
+    <connection>scm:svn:http://jndi-view.googlecode.com/svn/trunk</connection>
+    <developerConnection>scm:svn:https://jndi-view.googlecode.com/svn/trunk</developerConnection>
+    <url>http://code.google.com/p/jndi-view/source/browse/#svn/trunk</url>
+  </scm>
+
   <properties>
     <!-- The Spring framework version to use -->
     <spring.version>3.0.5.RELEASE</spring.version>
@@ -120,6 +127,22 @@
 
   </dependencies>
 
+  <repositories>
+    <repository>
+      <id>java.net1</id>
+      <name>Java.Net Maven1 Repository, hosts the javaee-api
+        dependency</name>
+      <url>http://download.java.net/maven/1</url>
+      <layout>legacy</layout>
+    </repository>
+    <!-- The Java.net Maven 2 repo, where we get wagon-svn -->
+    <repository>
+      <id>java.net2</id>
+      <name>Java.net Maven2 Repository</name>
+      <url>http://download.java.net/maven/2/</url>
+    </repository>
+  </repositories>
+
   <build>
     <finalName>jndi-view</finalName>
     <plugins>
@@ -132,12 +155,100 @@
           <target>1.5</target>
         </configuration>
       </plugin>
+      <!-- Configure the Maven Checkstyle plugin -->
       <plugin>
-        <artifactId>maven-eclipse-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>2.5</version>
         <configuration>
-          <wtpversion>1.5</wtpversion>
+          <configLocation>${basedir}/etc/checkstyle.xml</configLocation>
+          <consoleOutput>true</consoleOutput>
+          <propertyExpansion>config_loc=${project.basedir}/etc</propertyExpansion>
+          <failsOnError>true</failsOnError>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <configuration>
+              <failOnViolation>true</failOnViolation>
+              <violationSeverity>warning</violationSeverity>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Configure the Maven license plugin -->
+      <plugin>
+        <groupId>com.google.code.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+        <version>1.4.0</version>
+        <configuration>
+          <header>etc/license-header.txt</header>
+          <includes>
+            <include>src/**</include>
+          </includes>
         </configuration>
       </plugin>
+      <!-- Configure the source plugin to execute before the install phase -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>2.0.4</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
+
+    <extensions>
+      <!-- SVN Wagon Provider (Java.net), needed to deploy to SVN -->
+      <extension>
+        <groupId>org.jvnet.wagon-svn</groupId>
+        <artifactId>wagon-svn</artifactId>
+        <version>1.9</version>
+      </extension>
+    </extensions>
   </build>
+
+  <reporting>
+    <plugins>
+      <!-- Generate Javadocs as part of project reports -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.7</version>
+      </plugin>
+    </plugins>
+  </reporting>
+
+
+  <developers>
+    <developer>
+      <id>aisrael</id>
+      <name>Alistair A. Israel</name>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <email>aisrael@gmail.com</email>
+    </developer>
+  </developers>
+
+  <!-- Use the Google Code public SVN as our Maven 2 distribution repository -->
+  <distributionManagement>
+    <repository>
+      <uniqueVersion>false</uniqueVersion>
+      <id>jndi-view-releases</id>
+      <url>svn:https://jndi-view.googlecode.com/svn/maven2/releases/</url>
+    </repository>
+  </distributionManagement>
+
 </project>
+
