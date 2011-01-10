@@ -109,7 +109,9 @@
       <version>1.1.1</version>
     </dependency>
 
-    <!-- Foundations -->
+    <!--
+      Foundations
+    -->
     <!-- Servlet API -->
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -229,7 +231,6 @@
     </plugins>
   </reporting>
 
-
   <developers>
     <developer>
       <id>aisrael</id>
@@ -251,4 +252,3 @@
   </distributionManagement>
 
 </project>
-
