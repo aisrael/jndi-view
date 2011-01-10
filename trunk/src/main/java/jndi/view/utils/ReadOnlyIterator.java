@@ -10,16 +10,18 @@ package jndi.view.utils;
 import java.util.Iterator;
 
 /**
+ * @param <T>
+ *        a type
  * @author Alistair A. Israel
  */
-public abstract class ReadOnlyIterator<T> implements Iterator<T>{
+public abstract class ReadOnlyIterator<T> implements Iterator<T> {
 
     /**
      * {@inheritDoc}
      *
      * @see java.util.Iterator#remove()
      */
-    public void remove() {
+    public final void remove() {
         throw new UnsupportedOperationException("remove() called on read-only iterator!");
     }
 

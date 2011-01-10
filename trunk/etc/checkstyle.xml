@@ -5,7 +5,7 @@
     This configuration file was written by the eclipse-cs plugin configuration editor
 -->
 <!--
-    Checkstyle-Configuration: dirty-mockito Checkstyle 5 configuration
+    Checkstyle-Configuration: jndi-view Checkstyle 5 configuration
     Description: none
 -->
 <module name="Checker">
