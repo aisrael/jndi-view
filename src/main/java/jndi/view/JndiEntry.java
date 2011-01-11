@@ -14,7 +14,7 @@ public class JndiEntry {
 
     private final String name;
 
-    private final String className;
+    private String className;
 
     private String targetClassName;
 
@@ -38,6 +38,14 @@ public class JndiEntry {
      */
     public final String getName() {
         return name;
+    }
+
+    /**
+     * @param className
+     *        the className to set
+     */
+    public final void setClassName(final String className) {
+        this.className = className;
     }
 
     /**
