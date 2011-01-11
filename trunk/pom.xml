@@ -7,7 +7,7 @@
   <groupId>jndi-view</groupId>
   <artifactId>jndi-view</artifactId>
   <packaging>war</packaging>
-  <version>0.1.2-SNAPSHOT</version>
+  <version>0.2-SNAPSHOT</version>
 
   <licenses>
     <license>
@@ -145,7 +145,6 @@
   </repositories>
 
   <build>
-    <finalName>jndi-view</finalName>
     <plugins>
       <!-- Set Maven to compile for Java 5 -->
       <plugin>
