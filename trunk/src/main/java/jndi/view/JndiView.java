@@ -7,8 +7,9 @@
  */
 package jndi.view;
 
+import static java.util.Collections.emptyList;
+
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -121,31 +122,34 @@ public class JndiView extends ParameterizableViewController {
     private List<JndiEntry> browse(final String path) throws NamingException {
         return execute(new JndiCallback<List<JndiEntry>>() {
             public List<JndiEntry> doInContext(final Context ctx) throws NamingException {
-                NamingEnumeration<Binding> bindings = null;
                 if (JAVA_GLOBAL.equals(path)) {
                     // Do a little trick to handle "java:global"
                     final NamingEnumeration<Binding> root = ctx.listBindings("");
-                    Binding binding = null;
+                    Context javaGlobalContext = null;
                     while (root.hasMore()) {
-                        binding = root.next();
+                        final Binding binding = root.next();
                         if (JAVA_GLOBAL.equals(binding.getName())) {
                             final Object obj = binding.getObject();
                             if (obj instanceof Context) {
-                                bindings = ((Context) obj).listBindings("");
+                                javaGlobalContext = (Context) obj;
                             }
                             break;
                         }
                     }
-                } else {
-                    bindings = ctx.listBindings(path);
+                    if (javaGlobalContext != null) {
+                        return examineBindings(javaGlobalContext, path, javaGlobalContext.listBindings(""));
+                    }
+                    logger.warning("Unable to browse \"" + JAVA_GLOBAL + "\" namespace!");
+                    return emptyList();
                 }
-                return examineBindings(path, bindings);
+                return examineBindings(ctx, path, ctx.listBindings(path));
             }
-
         });
     }
 
     /**
+     * @param ctx
+     *        the Context we're examining
      * @param path
      *        the path to examine
      * @param bindings
@@ -154,8 +158,8 @@ public class JndiView extends ParameterizableViewController {
      * @throws NamingException
      *         on exception
      */
-    private List<JndiEntry> examineBindings(final String path, final NamingEnumeration<Binding> bindings)
-            throws NamingException {
+    private List<JndiEntry> examineBindings(final Context ctx, final String path,
+            final NamingEnumeration<Binding> bindings) throws NamingException {
         if (null == bindings) {
             throw new NullPointerException("bindings is null!");
         }
@@ -179,7 +183,13 @@ public class JndiView extends ParameterizableViewController {
                 final Reference ref = (Reference) obj;
                 entry.setTargetClassName(ref.getClassName());
             } else if ("org.glassfish.javaee.services.ResourceProxy".equals(className)) {
-                inspectResourceProxy(entry, obj);
+                // SUPPRESS CHECKSTYLE AvoidInlineConditionals
+                final Object lookup = ctx.lookup(path.isEmpty() ? name : path + "/" + name);
+                if (lookup != null) {
+                    final String lookedUpClassName = lookup.getClass().getName();
+                    logger.finest("lookup(\"" + name + "\") returned " + lookedUpClassName);
+                    entry.setTargetClassName(lookedUpClassName);
+                }
             } else if ("com.sun.ejb.containers.JavaGlobalJndiNamingObjectProxy".equals(className)) {
                 inspectJndiNamingObjectProxy(entry, obj);
             }
@@ -194,65 +204,12 @@ public class JndiView extends ParameterizableViewController {
      * @param obj
      *        the Object we're inspecting
      */
-    private void inspectResourceProxy(final JndiEntry entry, final Object obj) {
-        final Field resourceField = ReflectionUtils.findField(obj.getClass(), "resource");
-        if (null != resourceField) {
-            logger.finest("Found field \"resource\" of type " + resourceField.getType());
-            final Object fieldValue = Reflection.getField(obj, resourceField);
-            if (null != fieldValue) {
-                logger.finest("Got field value of type: " + fieldValue.getClass());
-                entry.setTargetClassName(fieldValue.getClass().getCanonicalName());
-
-                final Method m = ReflectionUtils.findMethod(fieldValue.getClass(), "getObjectType");
-                if (null != m) {
-                    final Object result = Reflection.invoke(fieldValue, m);
-                    logger.finest("getObjectType(): " + result);
-                } else {
-                    dumpMethods(fieldValue);
-                }
-            }
-        }
-    }
-
-    /**
-     * @param entry
-     *        the {@link JndiEntry} we're working on
-     * @param obj
-     *        the Object we're inspecting
-     */
     private void inspectJndiNamingObjectProxy(final JndiEntry entry, final Object obj) {
         final Field f = ReflectionUtils.findField(obj.getClass(), "intfName");
         if (f != null) {
             final Object v = Reflection.getField(obj, f);
             logger.finest("intfName: " + v);
             entry.setTargetClassName(v.toString());
-        }
-    }
-
-    /**
-     * @param obj
-     *        an Object
-     */
-    private void dumpMethods(final Object obj) {
-        final Class<? extends Object> clazz = obj.getClass();
-        final String className = clazz.getName();
-        for (final Method method : clazz.getMethods()) {
-            logger.finest(className + "#" + method.getName());
-        }
-        Class<?> cl = clazz;
-        while (cl != null) {
-            dumpFields(cl);
-            cl = cl.getSuperclass();
-        }
-    }
-
-    /**
-     * @param cl
-     *        a Class
-     */
-    private void dumpFields(final Class<?> cl) {
-        for (final Field field : cl.getDeclaredFields()) {
-            logger.finest(cl.getName() + "#" + field.getName() + " : " + field.getType());
         }
     }
 }
