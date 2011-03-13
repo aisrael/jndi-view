@@ -121,10 +121,10 @@ public class JndiView extends ParameterizableViewController {
      */
     private List<JndiEntry> browse(final String path) throws NamingException {
         return execute(new JndiCallback<List<JndiEntry>>() {
-            public List<JndiEntry> doInContext(final Context ctx) throws NamingException {
+            public List<JndiEntry> doInContext(final Context context) throws NamingException {
                 if (JAVA_GLOBAL.equals(path)) {
                     // Do a little trick to handle "java:global"
-                    final NamingEnumeration<Binding> root = ctx.listBindings("");
+                    final NamingEnumeration<Binding> root = context.listBindings("");
                     Context javaGlobalContext = null;
                     while (root.hasMore()) {
                         final Binding binding = root.next();
@@ -142,7 +142,7 @@ public class JndiView extends ParameterizableViewController {
                     logger.warning("Unable to browse \"" + JAVA_GLOBAL + "\" namespace!");
                     return emptyList();
                 }
-                return examineBindings(ctx, path, ctx.listBindings(path));
+                return examineBindings(context, path, context.listBindings(path));
             }
         });
     }
