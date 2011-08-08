@@ -153,7 +153,7 @@
         </configuration>
         <executions>
           <execution>
-            <phase>process-sources</phase>
+            <phase>test</phase>
             <goals>
               <goal>check</goal>
             </goals>
