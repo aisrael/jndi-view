@@ -97,22 +97,6 @@ public class JndiView extends ParameterizableViewController {
     }
 
     /**
-     * Delegate to {@link #jndiTemplate#execute(JndiCallback)}.
-     *
-     * @param <T>
-     *        the return type
-     * @param callback
-     *        the {@link JndiCallback}
-     * @return T
-     * @throws NamingException
-     *         on exception
-     * @see org.springframework.jndi.JndiTemplate#execute(org.springframework.jndi.JndiCallback)
-     */
-    public final <T> T execute(final JndiCallback<T> callback) throws NamingException {
-        return jndiTemplate.execute(callback);
-    }
-
-    /**
      * @param path
      *        the path to browse
      * @return {@link List} of {@link JndiEntry}s
@@ -120,7 +104,8 @@ public class JndiView extends ParameterizableViewController {
      *         on exception
      */
     private List<JndiEntry> browse(final String path) throws NamingException {
-        return execute(new JndiCallback<List<JndiEntry>>() {
+        final JndiCallback<List<JndiEntry>> contextCallback = new JndiCallback<List<JndiEntry>>() {
+            @Override
             public List<JndiEntry> doInContext(final Context context) throws NamingException {
                 if (JAVA_GLOBAL.equals(path)) {
                     // Do a little trick to handle "java:global"
@@ -144,7 +129,8 @@ public class JndiView extends ParameterizableViewController {
                 }
                 return examineBindings(context, path, context.listBindings(path));
             }
-        });
+        };
+        return jndiTemplate.execute(contextCallback);
     }
 
     /**
